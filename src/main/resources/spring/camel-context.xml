@@ -1,21 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:camel="http://camel.apache.org/schema/spring"
 	xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
 
-	<camelContext id="mainContext" xmlns="http://camel.apache.org/schema/spring">
+	<camel:camelContext id="mainContext" xmlns="http://camel.apache.org/schema/spring">
 
 		<onException>
 			<exception>java.lang.Exception</exception>
-			<setBody>
-				<simple>error</simple>
-			</setBody>
+			<handled>
+				<constant>true</constant>
+			</handled>
+			<process ref="errorProccessor" />
 		</onException>
 
 
 		<restConfiguration apiContextPath="api-docs" bindingMode="auto" component="undertow"
 			contextPath="/mylibrary" enableCORS="true" port="8080">
+			<consumerProperty key="bridgeErrorHandler" value="true" />
+			<dataFormatProperty key="prettyPrint" value="true" />
 			<apiProperty key="cors" value="true" />
 			<apiProperty key="api.title" value="my library Service" />
 			<apiProperty key="api.version" value="1.0.0" />
@@ -86,5 +90,5 @@
 
 		</route>
 
-	</camelContext>
+	</camel:camelContext>
 </beans>

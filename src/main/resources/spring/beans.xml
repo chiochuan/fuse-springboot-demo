@@ -6,7 +6,7 @@
     http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
     http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
-
+	<bean id="errorProccessor" class="com.chiochuan.demo.fuse.processor.ExceptionProcessor" />
 
 	<util:list id="BookList" list-class="java.util.ArrayList">
 		<ref bean="Book" />

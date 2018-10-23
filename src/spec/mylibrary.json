@@ -1,0 +1,129 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "mylibrary",
+    "description": "mylibrary",
+    "version": "1.0.0"
+  },
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/books": {
+      "get": {
+        "summary": "List All Books",
+        "description": "Gets a list of all `Book` entities.",
+        "operationId": "getBooks",
+        "responses": {
+          "200": {
+            "description": "Successful response - returns an array of `Book` entities.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Book"
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a Book",
+        "description": "Creates a new instance of a `Book`.",
+        "operationId": "createBook",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "A new `Book` to be created.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Book"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful response."
+          }
+        }
+      }
+    },
+    "/books/{bookId}": {
+      "get": {
+        "summary": "Get a Book",
+        "description": "Gets the details of a single instance of a `Book`.",
+        "operationId": "getBook",
+        "responses": {
+          "200": {
+            "description": "Successful response - returns a single `Book`.",
+            "schema": {
+              "$ref": "#/definitions/Book"
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a Book",
+        "description": "Updates an existing `Book`.",
+        "operationId": "updateBook",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Updated `Book` information.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Book"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Successful response."
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a Book",
+        "description": "Deletes an existing `Book`.",
+        "operationId": "deleteBook",
+        "responses": {
+          "204": {
+            "description": "Successful response."
+          }
+        }
+      },
+      "parameters": [
+        {
+          "name": "bookId",
+          "in": "path",
+          "description": "A unique identifier for a `Book`.",
+          "required": true,
+          "type": "string"
+        }
+      ]
+    }
+  },
+  "definitions": {
+    "Book": {
+      "title": "Root Type for Book",
+      "description": "book",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "Author": {
+          "type": "string"
+        }
+      },
+      "example": "{\n    \"id\": \"1234\",\n    \"title\": \"book title\",\n    \"Author\": \"book author\"\n}"
+    }
+  }
+}

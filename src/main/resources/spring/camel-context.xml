@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+	<camelContext id="mainContext" xmlns="http://camel.apache.org/schema/spring">
+
+		<restConfiguration apiContextPath="api-docs" bindingMode="auto" component="undertow"
+			contextPath="/mylibrary" enableCORS="true" port="8080">
+			<apiProperty key="cors" value="true" />
+			<apiProperty key="api.title" value="my library Service" />
+			<apiProperty key="api.version" value="1.0.0" />
+		</restConfiguration>
+
+		<rest>
+			<get id="getBooks" uri="/books">
+				<description>Gets a list of all `Book` entities.</description>
+				<to uri="direct:getBooks" />
+			</get>
+
+
+			<post id="createBook" uri="/books" type="com.chiochuan.demo.fuse.domain.Book">
+				<description>Creates a new instance of a `Book`.</description>
+				<param description="A new `Book` to be created." name="body" required="true" type="body" />
+				<to uri="direct:createBook" />
+			</post>
+
+			<get id="getBook" uri="/books/{bookId}">
+				<description>Gets the details of a single instance of a `Book`.</description>
+				<param dataType="string" description="A unique identifier for a `Book`." name="bookId" required="true"
+					type="path" />
+				<to uri="direct:getBooks" />
+			</get>
+			<put id="updateBook" uri="/books/{bookId}">
+				<description>Updates an existing `Book`.</description>
+				<param dataType="string" description="A unique identifier for a `Book`." name="bookId" required="true"
+					type="path" />
+				<param description="Updated `Book` information." name="body" required="true" type="body" />
+				<to uri="direct:updateBook" />
+			</put>
+			<delete id="deleteBook" uri="/books/{bookId}">
+				<description>Deletes an existing `Book`.</description>
+				<param dataType="string" description="A unique identifier for a `Book`." name="bookId" required="true"
+					type="path" />
+				<to uri="direct:deleteBook" />
+			</delete>
+		</rest>
+
+		<route id="mylibrary-getbook-route">
+			<from id="restone" uri="direct:getBooks" />
+			<to uri="sql:select * from book?dataSourceRef=dataSource" />
+		</route>
+
+
+		<route id="mylibrary-createbook-route">
+			<from id="resttwo" uri="direct:createBook" />
+			<log id="input-log" message=">>> ${body} : ${body.id} :: ${body.author} :: ${body.title}" />
+			<to uri="sql:insert into book values ('${body.id}','${body.author}', '${body.title}')?dataSourceRef=dataSource" />
+			<setBody id="route-setBody2">
+				<simple>Book created</simple>
+			</setBody>
+		</route>
+
+	</camelContext>
+</beans>

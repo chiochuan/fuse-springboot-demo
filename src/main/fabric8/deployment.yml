@@ -1,4 +1,5 @@
 spec:
+  replicas: 1
   template:
     spec:
       containers:
@@ -6,10 +7,14 @@ spec:
           resources:
             requests:
               cpu: "0.2"
-#              memory: 256Mi
+              memory: 256Mi
             limits:
               cpu: "1.0"
-#              memory: 256Mi
+              memory: 256Mi
           env:
           - name: SPRING_APPLICATION_JSON
-            value: '{"server":{"tomcat":{"max-threads":1}}}'
+            value: '{"server":{"undertow":{"io-threads":1, "worker-threads":2 }}}'
+          - name: JAVA_APP_JAR 
+            value: fuse-springboot-demo-1.0.0-SNAPSHOT.jar
+          - name: JAVA_MAIN_CLASS 
+            value: com.chiochuan.demo.fuse.Application

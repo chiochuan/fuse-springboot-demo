@@ -6,6 +6,14 @@
 
 	<camelContext id="mainContext" xmlns="http://camel.apache.org/schema/spring">
 
+		<onException>
+			<exception>java.lang.Exception</exception>
+			<setBody>
+				<simple>error</simple>
+			</setBody>
+		</onException>
+
+
 		<restConfiguration apiContextPath="api-docs" bindingMode="auto" component="undertow"
 			contextPath="/mylibrary" enableCORS="true" port="8080">
 			<apiProperty key="cors" value="true" />
@@ -16,9 +24,9 @@
 		<rest>
 			<get id="getBooks" uri="/books">
 				<description>Gets a list of all `Book` entities.</description>
+				<responseMessage message="All the books" />
 				<to uri="direct:getBooks" />
 			</get>
-
 
 			<post id="createBook" uri="/books" type="com.chiochuan.demo.fuse.domain.Book">
 				<description>Creates a new instance of a `Book`.</description>
@@ -32,13 +40,15 @@
 					type="path" />
 				<to uri="direct:getBooks" />
 			</get>
-			<put id="updateBook" uri="/books/{bookId}">
+
+			<put id="updateBook" uri="/books/{bookId}" type="com.chiochuan.demo.fuse.domain.Book">
 				<description>Updates an existing `Book`.</description>
 				<param dataType="string" description="A unique identifier for a `Book`." name="bookId" required="true"
 					type="path" />
 				<param description="Updated `Book` information." name="body" required="true" type="body" />
 				<to uri="direct:updateBook" />
 			</put>
+
 			<delete id="deleteBook" uri="/books/{bookId}">
 				<description>Deletes an existing `Book`.</description>
 				<param dataType="string" description="A unique identifier for a `Book`." name="bookId" required="true"
@@ -48,18 +58,32 @@
 		</rest>
 
 		<route id="mylibrary-getbook-route">
-			<from id="restone" uri="direct:getBooks" />
-			<to uri="sql:select * from book?dataSourceRef=dataSource" />
+			<from id="mylibrary-getbook" uri="direct:getBooks" />
+			<log message=">>> ${headers} " />
+			<to
+				uri="sql:select * from book where :#${header.bookId} IS NULL OR id = :#${header.bookId}?dataSourceRef=dataSource" />
 		</route>
 
-
 		<route id="mylibrary-createbook-route">
-			<from id="resttwo" uri="direct:createBook" />
-			<log id="input-log" message=">>> ${body} : ${body.id} :: ${body.author} :: ${body.title}" />
-			<to uri="sql:insert into book values ('${body.id}','${body.author}', '${body.title}')?dataSourceRef=dataSource" />
-			<setBody id="route-setBody2">
-				<simple>Book created</simple>
-			</setBody>
+			<from id="mylibrary-createbook" uri="direct:createBook" />
+			<log message=">>> ${headers} :: ${body} " />
+			<to uri="sql:insert into book values (:#${body.id}, :#${body.author}, :#${body.title})?dataSourceRef=dataSource" />
+
+		</route>
+
+		<route id="mylibrary-updatebook-route">
+			<from id="mylibrary-updatebook" uri="direct:updateBook" />
+			<log message=">>> ${headers} :: ${body} " />
+			<to
+				uri="sql:update book set title = :#${body.title}, author = :#${body.author} where id = :#${body.id}?dataSourceRef=dataSource" />
+
+		</route>
+
+		<route id="mylibrary-deletebook-route">
+			<from id="mylibrary-deletebook" uri="direct:deleteBook" />
+			<log message=">>> ${headers}" />
+			<to uri="sql:delete from book where id = :#${header.bookId}?dataSourceRef=dataSource" />
+
 		</route>
 
 	</camelContext>

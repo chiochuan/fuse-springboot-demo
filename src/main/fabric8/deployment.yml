@@ -9,12 +9,10 @@ spec:
               cpu: "0.2"
               memory: 256Mi
             limits:
-              cpu: "1.0"
+              cpu: "0.5"
               memory: 256Mi
           env:
           - name: SPRING_APPLICATION_JSON
             value: '{"server":{"undertow":{"io-threads":1, "worker-threads":2 }}}'
           - name: JAVA_APP_JAR 
             value: fuse-springboot-demo-1.0.0-SNAPSHOT.jar
-          - name: JAVA_MAIN_CLASS 
-            value: com.chiochuan.demo.fuse.Application
